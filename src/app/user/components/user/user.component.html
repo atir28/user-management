@@ -1,0 +1,167 @@
+<div class="p-3 pl-4 pr-4">
+    <div class="overflow-x-auto">
+      <!-- table header start -->
+      <div class="flex justify-between">
+        <div class="">
+          <button
+            class="text-white bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+            onclick="my_modal_1.showModal()"
+          >
+            Add user
+          </button>
+        </div>
+        <div class="">
+          <label
+            class="input input-bordered flex items-center gap-2 focus-within:outline-none"
+          >
+            <input type="text" class="grow" placeholder="Search for user" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              class="h-4 w-4 opacity-70"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+        </div>
+      </div>
+      <!-- table header end -->
+  
+      <!-- table start -->
+      <table class="table table-zebra shadow-xl">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Username</th>
+            <th>Admin</th>
+            <th>Department</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.id }}</td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.username }}</td>
+            <td [ngClass]="user.isAdmin ? 'text-yellow-500' : ''">
+              {{ isAdminToText(user.isAdmin) | titlecase }}
+            </td>
+            <td>{{ user.department }}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- table end -->
+    </div>
+  </div>
+  
+  <!-- dialog start -->
+  <dialog id="my_modal_1" class="modal">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">Hello!</h3>
+  
+      <form
+        action=""
+        class="grid gap-4 lg:grid-cols-2 md:grid-cols-3 sm:grid-cols-1"
+      >
+        <div>
+          <label
+            for="first_name"
+            class="block mb-2 text-sm font-medium text-gray-900"
+            >First name</label
+          >
+          <input
+            type="text"
+            maxlength="10"
+            id="first_name"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+            placeholder="John"
+            required
+          />
+        </div>
+        <div>
+          <label
+            for="last_name"
+            class="block mb-2 text-sm font-medium text-gray-900"
+            >Last name</label
+          >
+          <input
+            type="text"
+            id="last_name"
+            maxlength="10"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+            placeholder="Doe"
+            required
+          />
+        </div>
+        <div>
+          <label
+            for="username"
+            class="block mb-2 text-sm font-medium text-gray-900"
+            >Username</label
+          >
+          <input
+            type="text"
+            id="username"
+            maxlength="20"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+            placeholder="doejhon"
+            required
+          />
+        </div>
+  
+        <div>
+          <label
+            for="departments"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Select a department</label
+          >
+          <select
+            id="departments"
+            [(ngModel)]="selectedDepartmentId"
+            name="department"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          >
+            <option value="" disabled selected>Select a department</option>
+            <option
+              *ngFor="let department of departments"
+              [value]="department.id"
+            >
+              {{ department.name }}
+            </option>
+          </select>
+        </div>
+  
+        <div class="flex items-center">
+          <input
+            checked
+            id="checked-checkbox"
+            type="checkbox"
+            value=""
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          <label
+            for="checked-checkbox"
+            class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+            >is Admin</label
+          >
+        </div>
+      </form>
+  
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn">Close</button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+  <!-- dialog end -->
+  
