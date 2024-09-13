@@ -1,167 +1,492 @@
-<div class="p-3 pl-4 pr-4">
-    <div class="overflow-x-auto">
-      <!-- table header start -->
-      <div class="flex justify-between">
-        <div class="">
-          <button
-            class="text-white bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
-            onclick="my_modal_1.showModal()"
+<div class="p-3 pl-4 pr-4 shadow-xl">
+  <div class="overflow-x-auto">
+    <!-- table header start -->
+    <div class="flex justify-between mb-3">
+      <div class="">
+        <button
+          class="btn btn-primary text-white"
+          onclick="create_modal.showModal()"
+        >
+          <svg
+            class="w-6 h-6 text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
           >
-            Add user
-          </button>
-        </div>
-        <div class="">
-          <label
-            class="input input-bordered flex items-center gap-2 focus-within:outline-none"
-          >
-            <input type="text" class="grow" placeholder="Search for user" />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              class="h-4 w-4 opacity-70"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </label>
-        </div>
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 12h14m-7 7V5"
+            /></svg
+          >Add user
+        </button>
       </div>
-      <!-- table header end -->
-  
-      <!-- table start -->
-      <table class="table table-zebra shadow-xl">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Username</th>
-            <th>Admin</th>
-            <th>Department</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of users">
-            <td>{{ user.id }}</td>
-            <td>{{ user.first_name }}</td>
-            <td>{{ user.last_name }}</td>
-            <td>{{ user.username }}</td>
-            <td [ngClass]="user.isAdmin ? 'text-yellow-500' : ''">
-              {{ isAdminToText(user.isAdmin) | titlecase }}
-            </td>
-            <td>{{ user.department }}</td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- table end -->
+      <div class="">
+        <label
+          class="input input-bordered flex items-center gap-2 focus-within:outline-none"
+        >
+          <input type="text" class="grow" placeholder="Search for user" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="h-4 w-4 opacity-70"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </label>
+      </div>
+    </div>
+    <!-- table header end -->
+
+    <!-- table start -->
+    <table class="table table-zebra">
+      <thead class="bg-slate-500 text-white">
+        <tr>
+          <th>ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Username</th>
+          <th>Admin</th>
+          <th>Department</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td class="hover:text-yellow-500 cursor-pointer">
+            {{ user.first_name }}
+          </td>
+          <td>{{ user.last_name }}</td>
+          <td>{{ user.username }}</td>
+          <td [ngClass]="user.isAdmin ? 'text-yellow-500' : ''">
+            {{ isAdminToText(user.isAdmin) | titlecase }}
+          </td>
+          <td>{{ user.department }}</td>
+          <td>
+            <div class="flex gap-1">
+              <span class="btn btn-secondary" (click)="updateUser()"
+                ><i class="bi bi-pencil-square"></i
+              ></span>
+              <span
+                class="btn btn-error text-white"
+                onclick="confirm_modal.showModal()"
+                ><i class="bi bi-trash"></i
+              ></span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- table end -->
+  </div>
+</div>
+
+<!-- dialog create start -->
+<dialog id="create_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{ dialogTitile }} user</h3>
+
+    <form
+      [formGroup]="userForm"
+      action=""
+      class="grid gap-2 lg:grid-cols-2 grid-cols-1"
+    >
+      <div class="first_name">
+        <label
+          for="first_name"
+          class="block mb-1 text-sm font-medium text-gray-900"
+          [ngClass]="{
+            'text-red-500':
+              (userForm.get('first_name')?.hasError('required') ||
+                userForm.get('first_name')?.hasError('pattern')) &&
+              (userForm.get('first_name')?.touched ||
+                userForm.get('first_name')?.dirty)
+          }"
+          >First name</label
+        >
+        <input
+          type="text"
+          maxlength="10"
+          formControlName="first_name"
+          [ngStyle]="{
+            'border-color':
+              (userForm.get('first_name')?.hasError('required') ||
+                userForm.get('first_name')?.hasError('pattern')) &&
+              (userForm.get('first_name')?.touched ||
+                userForm.get('first_name')?.dirty)
+                ? 'red'
+                : 'blue'
+          }"
+          id="first_name"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+          placeholder="John"
+          required
+        />
+        <p
+          *ngIf="
+            userForm.get('first_name')?.hasError('required') &&
+            userForm.get('first_name')?.touched
+          "
+          class="text-red-500 text-xs italic"
+        >
+          First name is required.
+        </p>
+        <p
+          *ngIf="userForm.get('first_name')?.hasError('pattern')"
+          class="text-red-500 text-xs italic"
+        >
+          Only alphabetic characters are allowed.
+        </p>
+      </div>
+      <div class="last_name">
+        <label
+          for="last_name"
+          class="block mb-1 text-sm font-medium text-gray-900"
+          [ngClass]="{
+            'text-red-500':
+              (userForm.get('last_name')?.hasError('required') ||
+                userForm.get('last_name')?.hasError('pattern')) &&
+              (userForm.get('last_name')?.touched ||
+                userForm.get('last_name')?.dirty)
+          }"
+          >Last name</label
+        >
+        <input
+          type="text"
+          formControlName="last_name"
+          id="last_name"
+          [ngStyle]="{
+            'border-color':
+              (userForm.get('last_name')?.hasError('required') ||
+                userForm.get('last_name')?.hasError('pattern')) &&
+              (userForm.get('last_name')?.touched ||
+                userForm.get('last_name')?.dirty)
+                ? 'red'
+                : 'blue'
+          }"
+          maxlength="10"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+          placeholder="Doe"
+          required
+        />
+        <p
+          *ngIf="
+            userForm.get('last_name')?.hasError('required') &&
+            userForm.get('last_name')?.touched
+          "
+          class="text-red-500 text-xs italic"
+        >
+          Last name is required.
+        </p>
+        <p
+          *ngIf="userForm.get('last_name')?.hasError('pattern')"
+          class="text-red-500 text-xs italic"
+        >
+          Only alphabetic characters are allowed.
+        </p>
+      </div>
+      <div class="username">
+        <label
+          for="username"
+          class="block mb-1 text-sm font-medium text-gray-900"
+          [ngClass]="{
+            'text-red-500':
+              userForm.get('username')?.hasError('required') &&
+              (userForm.get('username')?.touched ||
+                userForm.get('username')?.dirty)
+          }"
+          >Username</label
+        >
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          maxlength="20"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+          placeholder="doejhon"
+          required
+          [ngStyle]="{
+            'border-color':
+              (userForm.get('username')?.hasError('required') ||
+                userForm.get('username')?.hasError('pattern')) &&
+              (userForm.get('username')?.touched ||
+                userForm.get('username')?.dirty)
+                ? 'red'
+                : 'blue'
+          }"
+        />
+        <p
+          *ngIf="
+            userForm.get('username')?.hasError('required') &&
+            userForm.get('username')?.touched
+          "
+          class="text-red-500 text-xs italic"
+        >
+          Username is required.
+        </p>
+      </div>
+
+      <div>
+        <label
+          for="departments"
+          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >Select a department</label
+        >
+        <select
+          id="departments"
+          [(ngModel)]="selectedDepartment"
+          name="department"
+          formControlName="department"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 focus-within:outline-none block w-full p-2.5"
+        >
+          <!-- <option value="" disabled selected>Select a department</option> -->
+          <option *ngFor="let department of departments" [value]="department">
+            {{ department.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="flex items-center">
+        <input
+          checked
+          id="isAdmin"
+          type="checkbox"
+          formControlName="isAdmin"
+          value=""
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+        <label
+          for="isAdmin"
+          class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >is Admin</label
+        >
+      </div>
+    </form>
+
+    <div class="modal-action">
+      <form method="dialog" class="flex justify-between gap-4">
+        <button class="btn btn-primary text-white" (click)="saveUser()">
+          Save
+        </button>
+        <button class="btn btn-warn">Close</button>
+      </form>
     </div>
   </div>
-  
-  <!-- dialog start -->
-  <dialog id="my_modal_1" class="modal">
-    <div class="modal-box">
-      <h3 class="text-lg font-bold">Hello!</h3>
-  
-      <form
-        action=""
-        class="grid gap-4 lg:grid-cols-2 md:grid-cols-3 sm:grid-cols-1"
-      >
-        <div>
-          <label
-            for="first_name"
-            class="block mb-2 text-sm font-medium text-gray-900"
-            >First name</label
-          >
-          <input
-            type="text"
-            maxlength="10"
-            id="first_name"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
-            placeholder="John"
-            required
-          />
-        </div>
-        <div>
-          <label
-            for="last_name"
-            class="block mb-2 text-sm font-medium text-gray-900"
-            >Last name</label
-          >
-          <input
-            type="text"
-            id="last_name"
-            maxlength="10"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
-            placeholder="Doe"
-            required
-          />
-        </div>
-        <div>
-          <label
-            for="username"
-            class="block mb-2 text-sm font-medium text-gray-900"
-            >Username</label
-          >
-          <input
-            type="text"
-            id="username"
-            maxlength="20"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
-            placeholder="doejhon"
-            required
-          />
-        </div>
-  
-        <div>
-          <label
-            for="departments"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >Select a department</label
-          >
-          <select
-            id="departments"
-            [(ngModel)]="selectedDepartmentId"
-            name="department"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          >
-            <option value="" disabled selected>Select a department</option>
-            <option
-              *ngFor="let department of departments"
-              [value]="department.id"
-            >
-              {{ department.name }}
-            </option>
-          </select>
-        </div>
-  
-        <div class="flex items-center">
-          <input
-            checked
-            id="checked-checkbox"
-            type="checkbox"
-            value=""
-            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
-          <label
-            for="checked-checkbox"
-            class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-            >is Admin</label
-          >
-        </div>
-      </form>
-  
-      <div class="modal-action">
-        <form method="dialog">
-          <button class="btn">Close</button>
-        </form>
+</dialog>
+<!-- dialog create end -->
+
+<dialog #updateModal id="update_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Update user</h3>
+
+    <form
+      [formGroup]="userForm"
+      action=""
+      class="grid gap-2 lg:grid-cols-2 grid-cols-1"
+    >
+      <div class="first_name">
+        <label
+          for="first_name"
+          class="block mb-1 text-sm font-medium text-gray-900"
+          [ngClass]="{
+            'text-red-500':
+              (userForm.get('first_name')?.hasError('required') ||
+                userForm.get('first_name')?.hasError('pattern')) &&
+              (userForm.get('first_name')?.touched ||
+                userForm.get('first_name')?.dirty)
+          }"
+          >First name</label
+        >
+        <input
+          type="text"
+          maxlength="10"
+          formControlName="first_name"
+          [ngStyle]="{
+            'border-color':
+              (userForm.get('first_name')?.hasError('required') ||
+                userForm.get('first_name')?.hasError('pattern')) &&
+              (userForm.get('first_name')?.touched ||
+                userForm.get('first_name')?.dirty)
+                ? 'red'
+                : 'blue'
+          }"
+          id="first_name"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+          placeholder="John"
+          required
+        />
+        <p
+          *ngIf="
+            userForm.get('first_name')?.hasError('required') &&
+            userForm.get('first_name')?.touched
+          "
+          class="text-red-500 text-xs italic"
+        >
+          First name is required.
+        </p>
+        <p
+          *ngIf="userForm.get('first_name')?.hasError('pattern')"
+          class="text-red-500 text-xs italic"
+        >
+          Only alphabetic characters are allowed.
+        </p>
       </div>
+      <div class="last_name">
+        <label
+          for="last_name"
+          class="block mb-1 text-sm font-medium text-gray-900"
+          [ngClass]="{
+            'text-red-500':
+              (userForm.get('last_name')?.hasError('required') ||
+                userForm.get('last_name')?.hasError('pattern')) &&
+              (userForm.get('last_name')?.touched ||
+                userForm.get('last_name')?.dirty)
+          }"
+          >Last name</label
+        >
+        <input
+          type="text"
+          formControlName="last_name"
+          id="last_name"
+          [ngStyle]="{
+            'border-color':
+              (userForm.get('last_name')?.hasError('required') ||
+                userForm.get('last_name')?.hasError('pattern')) &&
+              (userForm.get('last_name')?.touched ||
+                userForm.get('last_name')?.dirty)
+                ? 'red'
+                : 'blue'
+          }"
+          maxlength="10"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+          placeholder="Doe"
+          required
+        />
+        <p
+          *ngIf="
+            userForm.get('last_name')?.hasError('required') &&
+            userForm.get('last_name')?.touched
+          "
+          class="text-red-500 text-xs italic"
+        >
+          Last name is required.
+        </p>
+        <p
+          *ngIf="userForm.get('last_name')?.hasError('pattern')"
+          class="text-red-500 text-xs italic"
+        >
+          Only alphabetic characters are allowed.
+        </p>
+      </div>
+      <div class="username">
+        <label
+          for="username"
+          class="block mb-1 text-sm font-medium text-gray-900"
+          [ngClass]="{
+            'text-red-500':
+              userForm.get('username')?.hasError('required') &&
+              (userForm.get('username')?.touched ||
+                userForm.get('username')?.dirty)
+          }"
+          >Username</label
+        >
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          maxlength="20"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus-visible:outline-none"
+          placeholder="doejhon"
+          required
+          [ngStyle]="{
+            'border-color':
+              (userForm.get('username')?.hasError('required') ||
+                userForm.get('username')?.hasError('pattern')) &&
+              (userForm.get('username')?.touched ||
+                userForm.get('username')?.dirty)
+                ? 'red'
+                : 'blue'
+          }"
+        />
+        <p
+          *ngIf="
+            userForm.get('username')?.hasError('required') &&
+            userForm.get('username')?.touched
+          "
+          class="text-red-500 text-xs italic"
+        >
+          Username is required.
+        </p>
+      </div>
+
+      <div>
+        <label
+          for="departments"
+          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >Select a department</label
+        >
+        <select
+          id="departments"
+          [(ngModel)]="selectedDepartment"
+          name="department"
+          formControlName="department"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 focus-within:outline-none block w-full p-2.5"
+        >
+          <!-- <option value="" disabled selected>Select a department</option> -->
+          <option *ngFor="let department of departments" [value]="department">
+            {{ department.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="flex items-center">
+        <input
+          checked
+          id="isAdmin"
+          type="checkbox"
+          formControlName="isAdmin"
+          value=""
+          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        />
+        <label
+          for="isAdmin"
+          class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >is Admin</label
+        >
+      </div>
+    </form>
+
+    <div class="modal-action">
+      <form method="dialog" class="flex justify-between gap-4">
+        <button class="btn btn-primary text-white" (click)="saveUser()">
+          Save
+        </button>
+        <button class="btn btn-warn">Close</button>
+      </form>
     </div>
-  </dialog>
-  <!-- dialog end -->
-  
+  </div>
+</dialog>
+
+<dialog id="confirm_modal" class="modal">
+  <div class="modal-box">
+    <p>Are you sure you want to remove user ?</p>
+
+    <div class="modal-action">
+      <form method="dialog" class="flex justify-center gap-3 mx-auto">
+        <button class="btn btn-primary text-white">Confirm</button>
+        <button class="btn btn-error text-white">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
