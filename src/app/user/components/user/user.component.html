@@ -30,7 +30,13 @@
         <label
           class="input input-bordered flex items-center gap-2 focus-within:outline-none"
         >
-          <input type="text" class="grow" placeholder="Search for user" />
+          <input
+            [(ngModel)]="searchUser"
+            (ngModelChange)="onSearchChange($event)"
+            type="text"
+            class="grow"
+            placeholder="Search for user"
+          />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -64,7 +70,7 @@
         <tbody>
           <tr
             id="tb_row"
-            *ngFor="let user of users$ | async"
+            *ngFor="let user of filteredUsers$ | async"
             [ngClass]="user.isAdmin ? 'bg-yellow-500 ' : ' '"
           >
             <td>{{ user.id }}</td>

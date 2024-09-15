@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../interface/User';
 import { Store } from '@ngrx/store';
 import { selectAllUsers } from '../../store/user.selectors';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
 import * as UserActions from '../../store/user.actions';
 
 @Component({
@@ -15,16 +15,37 @@ export class UserComponent implements OnInit {
   @ViewChild('updateModal') updateModal!: ElementRef<any>;
   @ViewChild('createModal') createModal!: ElementRef<any>;
   users$!: Observable<User[]>;
+  filteredUsers$!: Observable<User[]>;
+  searchUser: string = '';
   departments: string[] = ['Marketing', 'Management', 'Maintenance'];
   selectedDepartment: any = this.departments[0];
   userToRemove!: User;
   userForm!: FormGroup;
-
+  private searchTermSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   constructor(private formBuilder: FormBuilder, private store: Store) { }
 
   ngOnInit(): void {
     this.userFormController();
     this.users$ = this.store.select(selectAllUsers);
+
+    this.filteredUsers$ = this.searchTermSubject.pipe(
+      map(term => term.toLowerCase()),
+      switchMap(term =>
+        this.users$.pipe(
+          map((users) => users.filter(user =>
+            (user.first_name?.toLowerCase() ?? '').includes(term) ||
+            (user.last_name?.toLowerCase() ?? '').includes(term) ||
+            (user.username?.toLowerCase() ?? '').includes(term) ||
+            (user.department?.toLowerCase() ?? '').includes(term)
+          ))
+        )
+      )
+    );
+
+    this.searchTermSubject.next(this.searchUser);
+  }
+  onSearchChange(searchUser: string): void {
+    this.searchTermSubject.next(searchUser);
   }
 
   userFormController(userData: User = {}) {
