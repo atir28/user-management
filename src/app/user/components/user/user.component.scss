@@ -1,0 +1,19 @@
+.table-wrapper {
+  height: calc(100vh - 209px) !important;
+  table {
+    thead {
+      tr {
+        th {
+          text-align: center;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          text-align: center;
+        }
+      }
+    }
+  }
+}

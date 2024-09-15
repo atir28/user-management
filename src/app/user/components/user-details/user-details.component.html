@@ -1,1 +1,48 @@
-<p>user-details works!</p>
+<div
+  class="user-details-wrapper flex justify-center items-center p-3 pl-4 pr-4 shadow-xl"
+>
+  <div class="card bg-base-100 shadow-xl" *ngIf="user$ | async as user">
+    <div class="card-body">
+      <h2 class="card-title text-center font-serif">User details</h2>
+      <div class="grid lg:grid-cols-2 grid-cols-1 gap-2">
+        <div class="flex flex-row gap-1">
+          <p class="text-sm font-semibold font-serif text-gray-600 !grow-0">
+            First name:
+          </p>
+          <p class="text-sm font-semibold font-serif text-gray-600">{{user.first_name}}</p>
+        </div>
+        <div class="flex flex-row gap-1">
+          <p class="text-sm font-semibold font-serif text-gray-600 !grow-0">
+            Last name:
+          </p>
+          <p class="text-sm font-semibold font-serif text-gray-600">{{user.last_name}}</p>
+        </div>
+        <div class="flex flex-row gap-1">
+          <p class="text-sm font-semibold font-serif text-gray-600 !grow-0">
+            Username:
+          </p>
+          <p class="text-sm font-semibold font-serif text-gray-600">{{user.username}}</p>
+        </div>
+        <div class="flex flex-row gap-1">
+          <p class="text-sm font-semibold font-serif text-gray-600 !grow-0">
+            Department:
+          </p>
+          <p class="text-sm font-semibold font-serif text-gray-600">
+            {{user.department}}
+          </p>
+        </div>
+        <div class="flex flex-row gap-1">
+          <p class="text-sm font-semibold font-serif text-gray-600 !grow-0">
+            Is admin:
+          </p>
+          <p class="text-sm font-semibold font-serif text-gray-600">
+            {{user.isAdmin ? 'Yes':'No'}}
+          </p>
+        </div>
+      </div>
+      <div class="card-actions justify-center">
+        <button class="btn btn-primary" (click)="goBack()">Go back</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../interface/User';
+import { Store } from '@ngrx/store';
+import { selectAllUsers } from '../../store/user.selectors';
+import { Observable } from 'rxjs';
+import * as UserActions from '../../store/user.actions';
 
 @Component({
   selector: 'app-user',
@@ -8,58 +12,78 @@ import { User } from '../../interface/User';
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
-  users = [{ "id": 1, "first_name": "Lennard", "last_name": "Decaze", "username": "Jamie", "isAdmin": true, "department": "Sheilakathryn" },
-  { "id": 2, "first_name": "Trev", "last_name": "Parysiak", "username": "Lionello", "isAdmin": false, "department": "Rosalyn" },
-  { "id": 3, "first_name": "Karel", "last_name": "Lydden", "username": "Sam", "isAdmin": false, "department": "Ellie" },
-  { "id": 4, "first_name": "Skip", "last_name": "Lee", "username": "Hailey", "isAdmin": true, "department": "Tremain" },
-  { "id": 5, "first_name": "Batholomew", "last_name": "Perulli", "username": "Simonne", "isAdmin": true, "department": "Arabela" }]
-
-  departments = [
-    { id: 0, name: 'Marketing' },
-    { id: 1, name: 'Management' },
-    { id: 2, name: 'Maintenance' },
-  ]
-
-  selectedDepartment = this.departments[0]
+  @ViewChild('updateModal') updateModal!: ElementRef<any>;
+  @ViewChild('createModal') createModal!: ElementRef<any>;
+  users$!: Observable<User[]>;
+  departments: string[] = ['Marketing', 'Management', 'Maintenance'];
+  selectedDepartment: any = this.departments[0];
+  userToRemove!: User;
   userForm!: FormGroup;
-  dialogTitile: string = 'Create'
 
-  constructor(private fb: FormBuilder) {
-
-  }
+  constructor(private formBuilder: FormBuilder, private store: Store) { }
 
   ngOnInit(): void {
     this.userFormController();
+    this.users$ = this.store.select(selectAllUsers);
   }
 
   userFormController(userData: User = {}) {
-    this.userForm = this.fb.group({
-      id: [this.generateRandomId(), Validators.required],
-      first_name: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
-      last_name: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
-      username: ['', [Validators.required]],
-      isAdmin: [false],
-      department: [Validators.required]
+    this.userForm = this.formBuilder.group({
+      id: [userData.id ? userData.id : null],
+      first_name: [userData.first_name ? userData.first_name : '', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
+      last_name: [userData.last_name ? userData.last_name : '', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
+      username: [userData.username ? userData.username : '', [Validators.required]],
+      isAdmin: [userData.isAdmin ? userData.isAdmin : false],
+      department: [userData.department ? userData.department : this.selectedDepartment, [Validators.required]]
     });
+  }
 
+  openUpdateUserModal(user: User) {
+    this.selectedDepartment = user.department
+    this.userForm.patchValue(user);
+    console.log(this.selectedDepartment)
+    this.updateModal.nativeElement.showModal()
+  }
+  openConfirmDialogModal(user: User) {
+    this.userToRemove = user;
   }
 
   generateRandomId(): number {
-    return Math.floor(1000 + Math.random() * 9000);  // Generates a number between 1000 and 9999
+    return Math.floor(1000 + Math.random() * 9000);
   }
-  isAdminToText(isAdmin: boolean): string {
-    return isAdmin ? 'yes' : 'no';
-  }
-
   saveUser() {
-    this.userForm.reset();
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
+
+    } else {
+      const user = this.userForm.getRawValue();
+      const newId = this.generateRandomId();
+      const updatedUser = {
+        ...user,
+        id: newId
+      };
+
+      this.store.dispatch(UserActions.addUser({ user: updatedUser }));
+      this.userForm.reset();
+      this.createModal.nativeElement.close();
+    }
   }
-  @ViewChild('updateModal') updateModal!: ElementRef<any>;
 
   updateUser() {
-    this.updateModal.nativeElement.showModal()
+    this.store.dispatch(UserActions.updateUser({ user: this.userForm.getRawValue() }));
+    this.userForm.reset();
+    this.updateModal.nativeElement.close();
   }
 
-  removeUser(id: number) { }
+  removeUser() {
+    this.store.dispatch(UserActions.deleteUser({ id: this.userToRemove.id as number }));
+    this.userToRemove = {};
+
+  }
+
+  cancelForm(modal: any) {
+    this.userForm.reset();
+    modal.close();
+  }
 
 }
