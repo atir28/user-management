@@ -561,11 +561,9 @@
 
       <div id="form_field" class="flex items-center">
         <input
-          checked
           id="isAdmin"
           type="checkbox"
           formControlName="isAdmin"
-          value=""
           class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
         />
         <label
@@ -584,6 +582,7 @@
           [ngClass]="{
             'border-none': userForm.invalid
           }"
+          id="btn_update"
           class="btn btn-primary text-white"
           (click)="updateUser()"
         >
@@ -615,14 +614,14 @@
       <p class="text-[14px] sm:text-[12px]">
         Are you sure you want to remove ?
       </p>
-      <p class="text-[14px] sm:text-[12px]">
+      <p class="text-[14px] sm:text-[12px]" id="user_details">
         {{ userToRemove?.first_name + " " + userToRemove?.last_name }}
       </p>
     </div>
 
     <div class="modal-action">
       <form method="dialog" class="flex justify-center gap-3 mx-auto">
-        <button class="btn btn-primary text-white" (click)="removeUser()">
+        <button id="confirm_btn" class="btn btn-primary text-white" (click)="removeUser()">
           Confirm
         </button>
         <button class="btn btn-error text-white">Cancel</button>

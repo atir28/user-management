@@ -10,7 +10,8 @@ export interface UserState {
 const initialState: UserState = {
     users: [
         { id: 0, first_name: "Abhishek", last_name: "Giri", username: "agiri", isAdmin: true, department: 'Management' },
-        { id: 2, first_name: "Tai ", last_name: "Pun", username: "puntai", isAdmin: false, department: 'Marketing' },
+        { id: 2, first_name: "Tai", last_name: "San", username: "santai", isAdmin: false, department: 'Marketing' },
+        { id: 72, first_name: "Roger", last_name: "Melet", username: "melroger", isAdmin: true, department: 'Maintenance' },
        
     ],
 };
